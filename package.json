@@ -1,0 +1,20 @@
+{
+  "name": "ma-practice-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Adam Berkowitz <adam@adamjberkowitz.com>",
+  "license": "MIT",
+  "scripts": {
+    "develop": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "express-graphql": "^0.6.12",
+    "graphql": "^0.13.2",
+    "mongoose": "^5.0.11"
+  },
+  "devDependencies": {
+    "morgan": "^1.9.0",
+    "nodemon": "^1.17.2"
+  }
+}

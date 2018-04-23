@@ -1,0 +1,17 @@
+version: "3"
+services:
+  node:
+    image: uconn/local:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/project
+    depends_on:
+      - mongo
+    entrypoint: ["npm", "run", "develop"]
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/db
