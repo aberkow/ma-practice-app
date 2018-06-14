@@ -48,11 +48,17 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(_, args) {
         try {
-          console.log(args, 'args');
+          const temp = {};
           const newCombination = new Combination(args);
           const combination = await newCombination.save();
-          console.log(combination, 'combination');
-          return combination;
+          const { techniques } = combination;
+          const results = await Promise.all(techniques.map(async technique => {
+            return await Technique.findById(technique).populate('Technique');
+          }));
+          temp._id = combination._id;
+          temp.name = args.name;
+          temp.techniques = results;
+          return temp;
         } catch(err) {
           console.log(`addCombination error ${err}`);
         }
