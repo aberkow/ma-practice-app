@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
@@ -11,6 +12,7 @@ const Combination = require('../models/combination');
 const CombinationType = require('./types/combinationType');
 
 const Technique = require('../models/technique');
+const TechniqueInputType = require('./types/techniqueInputType');
 const TechniqueType = require('./types/techniqueType');
 
 const mutation = new GraphQLObjectType({
@@ -42,7 +44,32 @@ const mutation = new GraphQLObjectType({
       description: 'Create a combination',
       args: {
         name: { type: GraphQLString },
-        techniques: { type: GraphQLList(TechniqueType) }
+        techniques: { type: new GraphQLList(TechniqueInputType) }
+      },
+      async resolve(_, args) {
+        try {
+          // first - save a new combination to the db.
+          // the technique id's will be passed in as references to find the Techniques.
+          const newCombination = new Combination(args);
+          const combination = await newCombination.save();
+
+          // store the techniques array of id's as a variable
+          const { techniques } = combination;
+
+          // store the results of the Promises from finding the id's and populating.
+          const results = await Promise.all(techniques.map(async technique => {
+            return await Technique.findById(technique).populate('Technique');
+          }));
+
+          // return all the values in a single object.
+          return {
+            _id: combination._id,
+            name: args.name,
+            techniques: results,
+          }
+        } catch(err) {
+          console.log(`addCombination error ${err}`);
+        }
       }
     },
     updateTechnique: {
@@ -80,6 +107,22 @@ const mutation = new GraphQLObjectType({
           return deletedTechnique;
         } catch(err) {
           console.log(`deleteTechnique error -> ${err}`);
+        }
+      }
+    },
+    deleteCombination: {
+      type: CombinationType,
+      description: 'Delete a combination from the db',
+      args: {
+        _id: { type: GraphQLID },
+      },
+      async resolve(_, args) {
+        try {
+          const { _id } = args;
+          const deletedCombination = await Combination.findByIdAndRemove(_id);
+          return deletedCombination;
+        } catch(err) {
+          console.log(`deleteCombination error -> ${err}`);
         }
       }
     }
