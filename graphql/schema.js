@@ -48,17 +48,25 @@ const mutation = new GraphQLObjectType({
       },
       async resolve(_, args) {
         try {
-          const temp = {};
+          // first - save a new combination to the db.
+          // the technique id's will be passed in as references to find the Techniques.
           const newCombination = new Combination(args);
           const combination = await newCombination.save();
+
+          // store the techniques array of id's as a variable
           const { techniques } = combination;
+
+          // store the results of the Promises from finding the id's and populating.
           const results = await Promise.all(techniques.map(async technique => {
             return await Technique.findById(technique).populate('Technique');
           }));
-          temp._id = combination._id;
-          temp.name = args.name;
-          temp.techniques = results;
-          return temp;
+
+          // return all the values in a single object.
+          return {
+            _id: combination._id,
+            name: args.name,
+            techniques: results,
+          }
         } catch(err) {
           console.log(`addCombination error ${err}`);
         }
@@ -99,6 +107,22 @@ const mutation = new GraphQLObjectType({
           return deletedTechnique;
         } catch(err) {
           console.log(`deleteTechnique error -> ${err}`);
+        }
+      }
+    },
+    deleteCombination: {
+      type: CombinationType,
+      description: 'Delete a combination from the db',
+      args: {
+        _id: { type: GraphQLID },
+      },
+      async resolve(_, args) {
+        try {
+          const { _id } = args;
+          const deletedCombination = await Combination.findByIdAndRemove(_id);
+          return deletedCombination;
+        } catch(err) {
+          console.log(`deleteCombination error -> ${err}`);
         }
       }
     }
