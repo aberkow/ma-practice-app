@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const port = process.env.PORT || 3000;
 const mongo = 'mongodb://mongo:27017'
 
-const schema = require('./graphql/technique');
+const schema = require('./graphql/schema');
 
 mongoose.connect(mongo);
 mongoose.Promise = global.Promise;

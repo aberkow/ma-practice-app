@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
@@ -11,6 +12,7 @@ const Combination = require('../models/combination');
 const CombinationType = require('./types/combinationType');
 
 const Technique = require('../models/technique');
+const TechniqueInputType = require('./types/techniqueInputType');
 const TechniqueType = require('./types/techniqueType');
 
 const mutation = new GraphQLObjectType({
@@ -42,7 +44,18 @@ const mutation = new GraphQLObjectType({
       description: 'Create a combination',
       args: {
         name: { type: GraphQLString },
-        techniques: { type: GraphQLList(TechniqueType) }
+        techniques: { type: new GraphQLList(TechniqueInputType) }
+      },
+      async resolve(_, args) {
+        try {
+          console.log(args, 'args');
+          const newCombination = new Combination(args);
+          const combination = await newCombination.save();
+          console.log(combination, 'combination');
+          return combination;
+        } catch(err) {
+          console.log(`addCombination error ${err}`);
+        }
       }
     },
     updateTechnique: {
