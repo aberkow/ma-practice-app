@@ -143,7 +143,19 @@ const RootQuery = new GraphQLObjectType({
         try {
           const { _id } = args;
           const combination = await Combination.findById(_id);
-          return combination;
+          // store the techniques array of id's as a variable
+          const { techniques } = combination;
+
+          // store the results of the Promises from finding the id's and populating.
+          const results = await Promise.all(techniques.map(async technique => {
+            return await Technique.findById(technique).populate('Technique');
+          }));
+
+          return {
+            _id: combination._id,
+            name: combination.name,
+            techniques: results,
+          }
         } catch (err) {
           console.log(`combination error -> ${err}`);
         }
@@ -155,6 +167,18 @@ const RootQuery = new GraphQLObjectType({
       async resolve() {
         try {
           const combinations = await Combination.find({});
+          console.log(combinations)
+          const test = combinations.map(combination => {
+            const { techniques } = combination;
+            return techniques
+            // store the results of the Promises from finding the id's and populating.
+            // return Promise.all(techniques.map(async technique => {
+            //   return await Technique.findById(technique).populate('Technique');
+            // }));
+
+            
+          });
+          console.log(test);
           return combinations;
         } catch (err) {
           console.log(`allCombinations error -> ${err}`);
