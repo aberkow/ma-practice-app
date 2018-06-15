@@ -167,18 +167,24 @@ const RootQuery = new GraphQLObjectType({
       async resolve() {
         try {
           const combinations = await Combination.find({});
-          console.log(combinations)
-          const test = combinations.map(combination => {
+          // console.log(combinations)
+          const results = Promise.all(combinations.map(async combination => {
             const { techniques } = combination;
-            return techniques
-            // store the results of the Promises from finding the id's and populating.
-            // return Promise.all(techniques.map(async technique => {
-            //   return await Technique.findById(technique).populate('Technique');
-            // }));
+            const results = Promise.all(techniques.map(async technique => {
+              return await Technique.findById(technique).populate('Technique');
+            }))
+            return results;
+          }))
+          // const test = combinations.map(combination => {
+          //   return techniques
+          //   // store the results of the Promises from finding the id's and populating.
+          //   // return Promise.all(techniques.map(async technique => {
+          //   //   return await Technique.findById(technique).populate('Technique');
+          //   // }));
 
             
-          });
-          console.log(test);
+          // });
+          console.log(results);
           return combinations;
         } catch (err) {
           console.log(`allCombinations error -> ${err}`);
