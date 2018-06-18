@@ -1,7 +1,6 @@
 {
   "name": "ma-practice-app",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "Adam Berkowitz <adam@adamjberkowitz.com>",
   "license": "MIT",
   "scripts": {
