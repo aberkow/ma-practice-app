@@ -168,7 +168,7 @@ const RootQuery = new GraphQLObjectType({
         try {
           const combinations = await Combination.find({});
           
-          const populatedCombinations = await Promise.all(combinations.map(async combination => {
+          return await Promise.all(combinations.map(async combination => {
             const { techniques } = combination;
 
             const results = await Promise.all(techniques.map(async technique => {
@@ -181,8 +181,6 @@ const RootQuery = new GraphQLObjectType({
               techniques: results
             }
           }));
-
-          return populatedCombinations;
         } catch (err) {
           console.log(`allCombinations error -> ${err}`);
         }
