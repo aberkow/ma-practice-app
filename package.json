@@ -1,11 +1,12 @@
 {
   "name": "ma-practice-app",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "Adam Berkowitz <adam@adamjberkowitz.com>",
   "license": "MIT",
   "scripts": {
-    "develop": "nodemon server.js"
+    "develop": "npm run develop:server | npm run develop:client",
+    "develop:server": "nodemon server.js",
+    "develop:client": "webpack --watch"
   },
   "dependencies": {
     "express": "^4.16.3",
@@ -14,7 +15,13 @@
     "mongoose": "^5.0.11"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
     "morgan": "^1.9.0",
-    "nodemon": "^1.17.2"
+    "nodemon": "^1.17.2",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8"
   }
 }

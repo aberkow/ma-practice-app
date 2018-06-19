@@ -5,10 +5,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
+      - ./.entrypoint/server-entrypoint.sh:/entrypoint.sh
       - ./:/project
     depends_on:
       - mongo
-    entrypoint: ["npm", "run", "develop"]
   mongo:
     image: mongo:latest
     ports:
