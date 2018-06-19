@@ -35,9 +35,7 @@ app.use('/graphql', expressGraphQL({
   })
 }));
 
-app.get('/', (req, res) => {
-  res.send('Hello world');
-});
+app.use(express.static('public'));
 
 /*
 This way we wait for the db connection/port to be opened before the server begins listening.
