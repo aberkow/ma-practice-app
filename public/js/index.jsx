@@ -34,11 +34,11 @@ const allTechniqueNames = gql`
 `;
 
 const techniqueDetails = gql`
-query technique($_id: String!) {
-  technique(_id: $_id) {
-    description
+  query technique($_id: ID!) {
+    technique(_id: $_id) {
+      description
+    }
   }
-}
 `
 
 class TechniqueNames extends Component {
@@ -46,7 +46,6 @@ class TechniqueNames extends Component {
     super(props);
   }
   render() {
-    console.log(this.props);
     return (
       <Query query={allTechniqueNames}
       >
@@ -76,24 +75,20 @@ class TechniqueNames extends Component {
 }
 
 
-const TechniqueDetails = ({ _id }) => {
+const TechniqueDetails = ({ _id }) => (
   <Query query={techniqueDetails} variables={{ _id }}>
-    { 
-      console.log(this.props, '_id')
-      // console.log(_id, 'query') 
-    }
     {({ loading, err, data }) => {
-      console.log(data, 'data');
       if (loading) return <p>Loading details...</p>
       if (err) {
         console.log(`details error -> ${err}`)
       }
+      const { technique: { description }} = data;
       return (
-        <p>success for details</p>
+        <p>{description}</p>
       )
     }}
   </Query>
-}
+)
 
 class App extends Component {
   constructor(props) {
@@ -102,16 +97,9 @@ class App extends Component {
       selectedTechnique: null
     }
     this.selectTechnique = this.selectTechnique.bind(this);
-    // this.onTechniqueSelected = this.onTechniqueSelected.bind(this);
   }
-  // onTechniqueSelected({ target }) {
-  //   console.log(target)
-  //   this.setState(() => ({ selectedTechnique: target.value }));
-  // }
   selectTechnique(evt) {
-    console.log(evt, 'evt');
     const { target } = evt;
-    console.log(target, 'target')
     this.setState({
       selectedTechnique: target.value
     })
