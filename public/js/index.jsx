@@ -41,40 +41,41 @@ const techniqueDetails = gql`
   }
 `
 
-class TechniqueNames extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <Query query={allTechniqueNames}
-      >
-        {({ loading, error, data }) => {
-          if (loading) return <p>Loading...</p>
-          if (error) {
-            console.log(error, 'query error');
-            return <p>error</p>
-          }
-          const { allTechniques } = data;
-          const techniqueItems = allTechniques.map((item, index) => {
-            return (
-              <option key={`item-${index}`} value={`${item._id}`}>
-                {`${item.name}`}
-              </option>
-            )
-          });
-          return (
-            <select value={this.props.value} onChange={(evt) => this.props.onChange(evt)}>
-              {techniqueItems}
-            </select>
-          )
-        }}
-      </Query>
-    )
-  }
-}
+/**
+ * 
+ * @param {prop} onChange -  the onChange prop on the componenet.
+ */
+const TechniqueNames = ({ onChange }) => (
+  <Query query={allTechniqueNames}
+  >
+    {({ loading, error, data}) => {
+      if (loading) return <p>Loading...</p>
+      if (error) {
+        console.log(error, 'query error');
+        return <p>error</p>
+      }
+      const { allTechniques } = data;
+      const techniqueItems = allTechniques.map((item, index) => {
+        return (
+          <option key={`item-${index}`} value={ item._id }>
+            { item.name }
+          </option>
+        )
+      });
+      return (
+        <select name="techniques" onChange={onChange}>
+          <option value=""></option>
+          {techniqueItems}
+        </select>
+      )
+    }}
+  </Query>
+);
 
-
+/**
+ * 
+ * @param {_id} string - the db id. arrives from the state of the App.
+ */
 const TechniqueDetails = ({ _id }) => (
   <Query query={techniqueDetails} variables={{ _id }}>
     {({ loading, err, data }) => {
@@ -125,28 +126,3 @@ render(<App />, document.getElementById('root'));
 
 
 
-// const TechniqueNames = ({ something }) => (
-//   <Query query={allTechniqueNames}
-//   >
-//     {({ loading, error, data}) => {
-//       if (loading) return <p>Loading...</p>
-//       if (error) {
-//         console.log(error, 'query error');
-//         return <p>error</p>
-//       }
-//       const { allTechniques } = data;
-//       const techniqueItems = allTechniques.map((item, index) => {
-//         return (
-//           <option key={`item-${index}`} value={`${item.name}`}>
-//             {`${item.name}`}
-//           </option>
-//         )
-//       });
-//       return (
-//         <select onChange={something}>
-//           {techniqueItems}
-//         </select>
-//       )
-//     }}
-//   </Query>
-// );
