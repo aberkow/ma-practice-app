@@ -2,7 +2,7 @@
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider, Query } from 'react-apollo';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { Component } from 'react';
 import { render } from 'react-dom';
 
 const client = new ApolloClient();
@@ -24,16 +24,29 @@ const client = new ApolloClient();
 //   `
 // }).then(result => console.log(result.data, 'client query result'));
 
-const Test = () => (
-  <Query query={gql`
-    {
-      allTechniques {
-        name
-        description
-        rank
-      }
+const allTechniqueNames = gql`
+  {
+    allTechniques {
+      _id
+      name
     }
-  `}
+  }
+`;
+
+const techniqueDetails = gql`
+  query technique($_id: ID!) {
+    technique(_id: $_id) {
+      description
+    }
+  }
+`
+
+/**
+ * 
+ * @param {prop} onChange -  the onChange prop on the componenet.
+ */
+const TechniqueNames = ({ onChange }) => (
+  <Query query={allTechniqueNames}
   >
     {({ loading, error, data}) => {
       if (loading) return <p>Loading...</p>
@@ -44,27 +57,72 @@ const Test = () => (
       const { allTechniques } = data;
       const techniqueItems = allTechniques.map((item, index) => {
         return (
-          <li key={`item-${index}`}>
-            {`${item.name}`}
-          </li>
+          <option key={`item-${index}`} value={ item._id }>
+            { item.name }
+          </option>
         )
       });
       return (
-        <ul>
+        <select name="techniques" onChange={onChange}>
+          <option value=""></option>
           {techniqueItems}
-        </ul>
+        </select>
       )
     }}
   </Query>
 );
 
+/**
+ * 
+ * @param {_id} string - the db id. arrives from the state of the App.
+ */
+const TechniqueDetails = ({ _id }) => (
+  <Query query={techniqueDetails} variables={{ _id }}>
+    {({ loading, err, data }) => {
+      if (loading) return <p>Loading details...</p>
+      if (err) {
+        console.log(`details error -> ${err}`)
+      }
+      const { technique: { description }} = data;
+      return (
+        <p>{description}</p>
+      )
+    }}
+  </Query>
+)
 
-
-const App = () => (
-  <ApolloProvider client={client}>
-    <h2>This is react!</h2>
-    <Test />
-  </ ApolloProvider>
-);
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedTechnique: null
+    }
+    this.selectTechnique = this.selectTechnique.bind(this);
+  }
+  selectTechnique(evt) {
+    const { target } = evt;
+    this.setState({
+      selectedTechnique: target.value
+    })
+    return this.state;
+  }
+  render() {
+    return (
+      <ApolloProvider client={client}>
+        <div>
+          <h2>Working with Apollo</h2>
+          <TechniqueNames value={this.state.selectedTechnique} onChange={this.selectTechnique} />
+          {
+            this.state.selectedTechnique && <TechniqueDetails _id={this.state.selectedTechnique} />
+          }
+        </div>
+      </ApolloProvider>
+    )
+  }
+}
 
 render(<App />, document.getElementById('root'));
+
+
+
+
