@@ -6,6 +6,7 @@ import { render } from 'react-dom';
 
 import TechniqueDetails from '../Components/Techniques/TechniqueDetails';
 import TechniqueSelect from '../Components/Techniques/TechniqueSelect';
+import TechniqueInputForm from '../Components/Techniques/TechniqueInputForm';
 
 const client = new ApolloClient();
 
@@ -33,6 +34,7 @@ class App extends Component {
           {
             this.state.selectedTechnique && <TechniqueDetails _id={this.state.selectedTechnique} />
           }
+          <TechniqueInputForm />
         </div>
       </ApolloProvider>
     )
