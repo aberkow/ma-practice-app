@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-// import { Mutation } from 'react-apollo';
-// import { addTechnique } from '../../graphql/mutations';
+import { Mutation } from 'react-apollo';
+import { addTechnique } from '../../graphql/mutations';
 
 export default class TechniqueInputForm extends Component {
   constructor(props) {
@@ -27,16 +27,11 @@ export default class TechniqueInputForm extends Component {
       'BLACK'
     ]
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleChange(evt) {
     const { target: { name, value }} = evt;
 
     Object.assign(this.state.payload, { [name]: value })
-  }
-  handleSubmit(evt) {
-    evt.preventDefault();
-    console.log(this.state.payload, 'submission');
   }
   makeReadableOption(str) {
     return str.charAt(0) + str.slice(1).toLowerCase();
@@ -52,26 +47,38 @@ export default class TechniqueInputForm extends Component {
           return this.makeReadableOption(word);
         }).join(' ');
       } else {
-        return this.makeReadableOption(rank);
+        name = this.makeReadableOption(rank);
       }
 
-      return <option key={`rank-${index}`} value={rank}>{name}</option>
+      return <option key={`rank-${index}`} value={this.state.payload['rank']}>{name}</option>
       
     })
     return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <input type="text" onChange={this.handleChange} value={this.state.payload['input-name']} name="name" />
-          <input type="text" onChange={this.handleChange} name="style" value={this.state.payload['input-style']} />
-          <input type="text" onChange={this.handleChange} name="techniqueType" value={this.state.payload['input-techniqueType']} />
-          <select name="ranks" id="ranks" onChange={this.handleChange}>
-            <option value=""></option>
-            {ranks}
-          </select>
-          <textarea name="description" id="description" cols="30" rows="10" value={this.state.payload['input-description']} onChange={this.handleChange} />
-          <button type="submit">Add Technique</button>
-        </form>
-      </div>
+      <Mutation mutation={addTechnique}>
+        {(addTechnique, { data }) => (
+          <div>
+            <form onSubmit={evt => {
+              evt.preventDefault();
+              addTechnique({
+                variables: this.state.payload
+              })
+              for (name in this.state.payload) {
+                Object.assign(this.state.payload, {name: ''});
+              }
+            }}>
+              <input type="text" onChange={this.handleChange} value={this.state.payload['name']} name="name" />
+              <input type="text" onChange={this.handleChange} name="style" value={this.state.payload['style']} />
+              <input type="text" onChange={this.handleChange} name="techniqueType" value={this.state.payload['techniqueType']} />
+              <select name="rank" id="rank" onChange={this.handleChange}>
+                <option value=""></option>
+                {ranks}
+              </select>
+              <textarea name="description" id="description" cols="30" rows="10" value={this.state.payload['description']} onChange={this.handleChange} />
+              <button type="submit">Add Technique</button>
+            </form>
+          </div>
+        )}
+      </Mutation>
     )
   }
 }

@@ -7,7 +7,7 @@ module.exports = {
       $style: String,
       $techniqueType: String,
       $description: String,
-      rank: String
+      $rank: String
     ) {
       addTechnique(
         name: $name,
