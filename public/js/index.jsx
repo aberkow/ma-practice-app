@@ -1,95 +1,14 @@
 // https://www.apollographql.com/docs/react/essentials/get-started.html
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider, Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 
+import TechniqueDetails from '../Components/Techniques/TechniqueDetails';
+import TechniqueSelect from '../Components/Techniques/TechniqueSelect';
+import TechniqueInputForm from '../Components/Techniques/TechniqueInputForm';
+
 const client = new ApolloClient();
-
-// this is a different way of making the query.
-// the only thing that needs to get passed to ApolloProvider is the instance and then a Query component
-// client.query({
-//   query: gql`
-//     {
-//       allTechniques {
-//         _id
-//         name
-//         style
-//         techniqueType
-//         description
-//         rank
-//       }
-//     }
-//   `
-// }).then(result => console.log(result.data, 'client query result'));
-
-const allTechniqueNames = gql`
-  {
-    allTechniques {
-      _id
-      name
-    }
-  }
-`;
-
-const techniqueDetails = gql`
-  query technique($_id: ID!) {
-    technique(_id: $_id) {
-      description
-    }
-  }
-`
-
-/**
- * 
- * @param {prop} onChange -  the onChange prop on the componenet.
- */
-const TechniqueNames = ({ onChange }) => (
-  <Query query={allTechniqueNames}
-  >
-    {({ loading, error, data}) => {
-      if (loading) return <p>Loading...</p>
-      if (error) {
-        console.log(error, 'query error');
-        return <p>error</p>
-      }
-      const { allTechniques } = data;
-      const techniqueItems = allTechniques.map((item, index) => {
-        return (
-          <option key={`item-${index}`} value={ item._id }>
-            { item.name }
-          </option>
-        )
-      });
-      return (
-        <select name="techniques" onChange={onChange}>
-          <option value=""></option>
-          {techniqueItems}
-        </select>
-      )
-    }}
-  </Query>
-);
-
-/**
- * 
- * @param {_id} string - the db id. arrives from the state of the App.
- */
-const TechniqueDetails = ({ _id }) => (
-  <Query query={techniqueDetails} variables={{ _id }}>
-    {({ loading, err, data }) => {
-      if (loading) return <p>Loading details...</p>
-      if (err) {
-        console.log(`details error -> ${err}`)
-      }
-      const { technique: { description }} = data;
-      return (
-        <p>{description}</p>
-      )
-    }}
-  </Query>
-)
 
 class App extends Component {
   constructor(props) {
@@ -111,10 +30,11 @@ class App extends Component {
       <ApolloProvider client={client}>
         <div>
           <h2>Working with Apollo</h2>
-          <TechniqueNames value={this.state.selectedTechnique} onChange={this.selectTechnique} />
+          <TechniqueSelect value={this.state.selectedTechnique} onChange={this.selectTechnique} />
           {
             this.state.selectedTechnique && <TechniqueDetails _id={this.state.selectedTechnique} />
           }
+          <TechniqueInputForm />
         </div>
       </ApolloProvider>
     )
