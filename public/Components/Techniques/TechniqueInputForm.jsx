@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
+
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+
 import { addTechnique } from '../../graphql/mutations';
 
 export default class TechniqueInputForm extends Component {
@@ -50,7 +57,7 @@ export default class TechniqueInputForm extends Component {
         name = this.makeReadableOption(rank);
       }
 
-      return <option key={`rank-${index}`} value={this.state.payload['rank']}>{name}</option>
+      return <MenuItem key={`rank-${index}`} value={this.state.payload['rank']}>{name}</MenuItem>
       
     })
     return (
@@ -66,15 +73,15 @@ export default class TechniqueInputForm extends Component {
                 Object.assign(this.state.payload, {name: ''});
               }
             }}>
-              <input type="text" onChange={this.handleChange} value={this.state.payload['name']} name="name" />
-              <input type="text" onChange={this.handleChange} name="style" value={this.state.payload['style']} />
-              <input type="text" onChange={this.handleChange} name="techniqueType" value={this.state.payload['techniqueType']} />
-              <select name="rank" id="rank" onChange={this.handleChange}>
-                <option value=""></option>
+              <TextField type="text" onChange={this.handleChange} value={this.state.payload['name']} name="name" />
+              <TextField type="text" onChange={this.handleChange} name="style" value={this.state.payload['style']} />
+              <TextField type="text" onChange={this.handleChange} name="techniqueType" value={this.state.payload['techniqueType']} />
+              <Select name="rank" id="rank" onChange={this.handleChange}>
+                <MenuItem value=""></MenuItem>
                 {ranks}
-              </select>
-              <textarea name="description" id="description" cols="30" rows="10" value={this.state.payload['description']} onChange={this.handleChange} />
-              <button type="submit">Add Technique</button>
+              </Select>
+              <TextField multiline={true} name="description" id="description" cols="30" rows="10" value={this.state.payload['description']} onChange={this.handleChange} />
+              <Button variant="contained" color="primary" type="submit">Add Technique</Button>
             </form>
           </div>
         )}

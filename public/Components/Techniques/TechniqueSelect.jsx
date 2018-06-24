@@ -6,9 +6,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { allTechniques } from '../../graphql/queries';
 // import { Menu } from '@material-ui/core';
 
-const styles = theme => ({
+// const styles = theme => ({
 
-})
+// })
 
 const TechniqueSelect = ({ onChange }) => (
   <Query query={allTechniques}
