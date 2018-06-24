@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const {
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
@@ -158,6 +159,36 @@ const RootQuery = new GraphQLObjectType({
           }
         } catch (err) {
           console.log(`combination error -> ${err}`);
+        }
+      }
+    },
+    randomCombination: {
+      type: CombinationType,
+      description: 'Generate a random combination',
+      args: {
+        numberOfTechniques: {
+          type: GraphQLInt
+        }
+      },
+      async resolve(_, args) {
+        try {
+          const {
+            numberOfTechniques
+          } = args;
+          console.log(args, 'args')
+          let randomTechniques = await Technique.aggregate([{
+            "$sample": {
+              "size": 4
+            }
+          }]).exec();
+          console.log(randomTechniques, 'random');
+          
+          Promise.all(randomTechniques).then(techniques => {
+            console.log(techniques);
+          })
+
+        } catch (err) {
+          console.log(`randomCombination error -> ${err}`);
         }
       }
     },
