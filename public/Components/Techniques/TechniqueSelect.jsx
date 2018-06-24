@@ -1,6 +1,14 @@
 import React from 'react';
 import { Query } from 'react-apollo';
+// import { withStyles } from '@material-ui/core/styles';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { allTechniques } from '../../graphql/queries';
+// import { Menu } from '@material-ui/core';
+
+const styles = theme => ({
+
+})
 
 const TechniqueSelect = ({ onChange }) => (
   <Query query={allTechniques}
@@ -14,16 +22,18 @@ const TechniqueSelect = ({ onChange }) => (
       const { allTechniques } = data;
       const techniqueItems = allTechniques.map((item, index) => {
         return (
-          <option key={`item-${index}`} value={item._id}>
+          <MenuItem key={`item-${index}`} value={item._id}>
             {item.name}
-          </option>
+          </MenuItem>
         )
       });
       return (
-        <select name="techniques" onChange={onChange}>
-          <option value=""></option>
+        <Select name="techniques"
+          autoWidth={true} 
+          onChange={onChange}>
+          <MenuItem value=""></MenuItem>
           {techniqueItems}
-        </select>
+        </Select>
       )
     }}
   </Query>
