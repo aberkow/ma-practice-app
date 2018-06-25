@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -29,8 +29,8 @@ export default class TechniqueInputForm extends Component {
       'ADV_BLUE',
       'PURPLE',
       'ADV_PURPLE',
-      'PURPLE',
-      'ADV_PURPLE',
+      'BROWN',
+      'ADV_BROWN',
       'BLACK'
     ]
     this.handleChange = this.handleChange.bind(this);
@@ -57,8 +57,11 @@ export default class TechniqueInputForm extends Component {
         name = this.makeReadableOption(rank);
       }
 
-      return <MenuItem key={`rank-${index}`} value={this.state.payload['rank']}>{name}</MenuItem>
-      
+      return (
+        <MenuItem key={`rank-${index}`} value={this.state.payload['rank']}>
+          {name}
+        </MenuItem>
+      )
     })
     return (
       <Mutation mutation={addTechnique}>
@@ -76,12 +79,14 @@ export default class TechniqueInputForm extends Component {
               <TextField type="text" onChange={this.handleChange} value={this.state.payload['name']} name="name" />
               <TextField type="text" onChange={this.handleChange} name="style" value={this.state.payload['style']} />
               <TextField type="text" onChange={this.handleChange} name="techniqueType" value={this.state.payload['techniqueType']} />
-              <Select name="rank" id="rank" onChange={this.handleChange}>
+              <Select name="rank" id="rank" autoWidth={true} onChange={this.handleChange}>
                 <MenuItem value=""></MenuItem>
                 {ranks}
               </Select>
               <TextField multiline={true} name="description" id="description" cols="30" rows="10" value={this.state.payload['description']} onChange={this.handleChange} />
-              <Button variant="contained" color="primary" type="submit">Add Technique</Button>
+              <Button variant="contained" color="primary" type="submit">
+                Add Technique
+              </Button>
             </form>
           </div>
         )}

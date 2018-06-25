@@ -16,6 +16,8 @@ const Technique = require('../models/technique');
 const TechniqueInputType = require('./types/techniqueInputType');
 const TechniqueType = require('./types/techniqueType');
 
+const helpers = require('./utils/helpers');
+
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'The root mutations',
@@ -58,9 +60,7 @@ const mutation = new GraphQLObjectType({
           const { techniques } = combination;
 
           // store the results of the Promises from finding the id's and populating.
-          const results = await Promise.all(techniques.map(async technique => {
-            return await Technique.findById(technique).populate('Technique');
-          }));
+          const results = await helpers.guarantee(techniques, Technique);
 
           // return all the values in a single object.
           return {
@@ -148,9 +148,7 @@ const RootQuery = new GraphQLObjectType({
           const { techniques } = combination;
 
           // store the results of the Promises from finding the id's and populating.
-          const results = await Promise.all(techniques.map(async technique => {
-            return await Technique.findById(technique).populate('Technique');
-          }));
+          const results = await helpers.guarantee(techniques, Technique);
 
           return {
             _id: combination._id,
@@ -166,18 +164,17 @@ const RootQuery = new GraphQLObjectType({
       type: CombinationType,
       async resolve() {
         try {
-          let combination = await Combination.aggregate([{
+          // aggregate returns an array.
+          const combination = await Combination.aggregate([{
             "$sample": {
               "size": 1
             }
           }]).exec();
           const { techniques } = combination[0];
-          const results = await Promise.all(techniques.map(async technique => {
-            return await Technique.findById(technique).populate('Technique');
-          }));
+          const results = await helpers.guarantee(techniques, Technique);
           return {
-            _id: combination._id,
-            name: combination.name,
+            _id: combination[0]._id,
+            name: combination[0].name,
             techniques: results
           }
         } catch(err) {  
@@ -216,9 +213,7 @@ const RootQuery = new GraphQLObjectType({
           return await Promise.all(combinations.map(async combination => {
             const { techniques } = combination;
 
-            const results = await Promise.all(techniques.map(async technique => {
-              return await Technique.findById(technique).populate('Technique');
-            }));
+            const results = await helpers.guarantee(techniques, Technique);
 
             return {
               _id: combination._id,
