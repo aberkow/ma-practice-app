@@ -44,6 +44,7 @@ export default class TechniqueInputForm extends Component {
     return str.charAt(0) + str.slice(1).toLowerCase();
   }
   render() {
+    // this is broken. the value for the items and selector needs to be fixed.
     const ranks = this.ranks.map((rank, index) => {
       let name = '';
       const re = /_/ig
@@ -58,11 +59,12 @@ export default class TechniqueInputForm extends Component {
       }
 
       return (
-        <MenuItem key={`rank-${index}`} value={this.state.payload['rank']}>
+        <MenuItem key={`rank-${index}`} value={rank}>
           {name}
         </MenuItem>
       )
     })
+    console.log(ranks, 'ranks')
     return (
       <Mutation mutation={addTechnique}>
         {(addTechnique, { data }) => (
