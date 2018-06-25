@@ -164,29 +164,43 @@ const RootQuery = new GraphQLObjectType({
     },
     randomCombination: {
       type: CombinationType,
-      description: 'Generate a random combination',
-      args: {
-        numberOfTechniques: {
-          type: GraphQLInt
+      async resolve() {
+        try {
+          let combination = await Combination.aggregate([{
+            "$sample": {
+              "size": 1
+            }
+          }]).exec();
+          const { techniques } = combination[0];
+          const results = await Promise.all(techniques.map(async technique => {
+            return await Technique.findById(technique).populate('Technique');
+          }));
+          return {
+            _id: combination._id,
+            name: combination.name,
+            techniques: results
+          }
+        } catch(err) {  
+          console.log(`randomCombination error -> ${err}`);
         }
+      }
+    },
+    randomTechniqueList: {
+      type: new GraphQLList(TechniqueType),
+      description: 'Generate a random list of techniques',
+      args: {
+        numberOfTechniques: { type: GraphQLInt }
       },
       async resolve(_, args) {
         try {
-          const {
-            numberOfTechniques
-          } = args;
-          console.log(args, 'args')
+          const { numberOfTechniques } = args;
+          // get a random assortment of Technique documents from the db.
           let randomTechniques = await Technique.aggregate([{
             "$sample": {
-              "size": 4
+              "size": numberOfTechniques
             }
           }]).exec();
-          console.log(randomTechniques, 'random');
-          
-          Promise.all(randomTechniques).then(techniques => {
-            console.log(techniques);
-          })
-
+          return randomTechniques;
         } catch (err) {
           console.log(`randomCombination error -> ${err}`);
         }
