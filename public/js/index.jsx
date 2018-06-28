@@ -9,8 +9,7 @@ import {
   Link
 } from 'react-router-dom';
 
-
-import TechniqueDetails from '../Components/Techniques/TechniqueDetails';
+import Navigation from '../Components/Navigation/Navigation';
 import TechniqueSelect from '../Components/Techniques/TechniqueSelect';
 import TechniqueInputForm from '../Components/Techniques/TechniqueInputForm';
 
@@ -37,6 +36,7 @@ class App extends Component {
         <Router>
         <div>
           <h2>Working with Apollo</h2>
+          <Navigation />
           <div>
             <ul>
               <li><Link to="/">Home</Link></li>
