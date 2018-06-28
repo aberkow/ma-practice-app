@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const {
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
@@ -14,6 +15,8 @@ const CombinationType = require('./types/combinationType');
 const Technique = require('../models/technique');
 const TechniqueInputType = require('./types/techniqueInputType');
 const TechniqueType = require('./types/techniqueType');
+
+const helpers = require('./utils/helpers');
 
 const mutation = new GraphQLObjectType({
   name: 'Mutation',
@@ -57,9 +60,7 @@ const mutation = new GraphQLObjectType({
           const { techniques } = combination;
 
           // store the results of the Promises from finding the id's and populating.
-          const results = await Promise.all(techniques.map(async technique => {
-            return await Technique.findById(technique).populate('Technique');
-          }));
+          const results = await helpers.guarantee(techniques, Technique);
 
           // return all the values in a single object.
           return {
@@ -147,9 +148,7 @@ const RootQuery = new GraphQLObjectType({
           const { techniques } = combination;
 
           // store the results of the Promises from finding the id's and populating.
-          const results = await Promise.all(techniques.map(async technique => {
-            return await Technique.findById(technique).populate('Technique');
-          }));
+          const results = await helpers.guarantee(techniques, Technique);
 
           return {
             _id: combination._id,
@@ -158,6 +157,49 @@ const RootQuery = new GraphQLObjectType({
           }
         } catch (err) {
           console.log(`combination error -> ${err}`);
+        }
+      }
+    },
+    randomCombination: {
+      type: CombinationType,
+      async resolve() {
+        try {
+          // aggregate returns an array.
+          const combination = await Combination.aggregate([{
+            "$sample": {
+              "size": 1
+            }
+          }]).exec();
+          const { techniques } = combination[0];
+          const results = await helpers.guarantee(techniques, Technique);
+          return {
+            _id: combination[0]._id,
+            name: combination[0].name,
+            techniques: results
+          }
+        } catch(err) {  
+          console.log(`randomCombination error -> ${err}`);
+        }
+      }
+    },
+    randomTechniqueList: {
+      type: new GraphQLList(TechniqueType),
+      description: 'Generate a random list of techniques',
+      args: {
+        numberOfTechniques: { type: GraphQLInt }
+      },
+      async resolve(_, args) {
+        try {
+          const { numberOfTechniques } = args;
+          // get a random assortment of Technique documents from the db.
+          let randomTechniques = await Technique.aggregate([{
+            "$sample": {
+              "size": numberOfTechniques
+            }
+          }]).exec();
+          return randomTechniques;
+        } catch (err) {
+          console.log(`randomCombination error -> ${err}`);
         }
       }
     },
@@ -171,9 +213,7 @@ const RootQuery = new GraphQLObjectType({
           return await Promise.all(combinations.map(async combination => {
             const { techniques } = combination;
 
-            const results = await Promise.all(techniques.map(async technique => {
-              return await Technique.findById(technique).populate('Technique');
-            }));
+            const results = await helpers.guarantee(techniques, Technique);
 
             return {
               _id: combination._id,
