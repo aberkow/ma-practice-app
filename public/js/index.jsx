@@ -3,6 +3,12 @@ import ApolloClient from 'apollo-boost';
 import { ApolloProvider, Query } from 'react-apollo';
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom';
+
 
 import TechniqueDetails from '../Components/Techniques/TechniqueDetails';
 import TechniqueSelect from '../Components/Techniques/TechniqueSelect';
@@ -19,23 +25,35 @@ class App extends Component {
     this.selectTechnique = this.selectTechnique.bind(this);
   }
   selectTechnique(evt) {
-    const { target } = evt;
+    const { target: { value } } = evt;
     this.setState({
-      selectedTechnique: target.value
+      selectedTechnique: value
     })
     return this.state;
   }
   render() {
     return (
       <ApolloProvider client={client}>
+        <Router>
         <div>
           <h2>Working with Apollo</h2>
-          <TechniqueSelect value={this.state.selectedTechnique} onChange={this.selectTechnique} />
-          {
-            this.state.selectedTechnique && <TechniqueDetails _id={this.state.selectedTechnique} />
-          }
-          <TechniqueInputForm />
+          <div>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/technique-select">Technique Select</Link></li>
+              <li><Link to="/add-technique">Add Technique</Link></li>
+            </ul>
+          </div>
+
+          <Route path="/technique-select" 
+            render={() => <TechniqueSelect 
+              value={this.state.selectedTechnique}
+              onChange={this.selectTechnique} />}  />
+
+          <Route path="/add-technique" component={TechniqueInputForm} />
+
         </div>
+        </Router>
       </ApolloProvider>
     )
   }

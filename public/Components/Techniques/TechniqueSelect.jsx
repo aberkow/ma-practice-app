@@ -4,13 +4,10 @@ import { Query } from 'react-apollo';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { allTechniques } from '../../graphql/queries';
+import TechniqueDetails from './TechniqueDetails';
 // import { Menu } from '@material-ui/core';
 
-// const styles = theme => ({
-
-// })
-
-const TechniqueSelect = ({ onChange }) => (
+const TechniqueSelect = ({ value, onChange }) => (
   <Query query={allTechniques}
   >
     {({ loading, error, data }) => {
@@ -20,7 +17,14 @@ const TechniqueSelect = ({ onChange }) => (
         return <p>error</p>
       }
       const { allTechniques } = data;
-      const techniqueItems = allTechniques.map((item, index) => {
+      const sorted = allTechniques.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1
+        } else {
+          return 1;
+        }
+      });
+      const techniqueItems = sorted.map((item, index) => {
         return (
           <MenuItem key={`item-${index}`} value={item._id}>
             {item.name}
@@ -28,12 +32,19 @@ const TechniqueSelect = ({ onChange }) => (
         )
       });
       return (
-        <Select name="techniques"
-          autoWidth={true} 
-          onChange={onChange}>
-          <MenuItem value=""></MenuItem>
-          {techniqueItems}
-        </Select>
+        <div>
+          <Select name="techniques"
+            autoWidth={true} 
+            onChange={onChange}
+            value={value}>
+            <MenuItem value=""></MenuItem>
+            {techniqueItems}
+          </Select>
+          {/* 
+            conditional loading of the technique details
+          */}
+          { value && <TechniqueDetails _id={value} /> }
+        </div>
       )
     }}
   </Query>
