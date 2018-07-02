@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-// import Drawer from '@material-ui/core/Drawer';
+import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 // import List from '@material-ui/core/List';
-// import Hidden from '@material-ui/core/Hidden';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
+// import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/core/Menu';
 // import { Icon } from '@material-ui/core';
+
+import MainMenu from './MainMenu';
 
 const drawerWidth = 240;
 
@@ -63,14 +65,16 @@ class Navigation extends Component {
   render() {
     const { classes, theme } = this.props;
     console.log(classes, theme, 'drawer')
-    const drawer = (
-      <div>
-        <div className={classes.toolbar}>
-        <Divider />
-        <p>something</p>
-        </div>
-      </div>
-    );
+    // const drawer = (
+    //   <div>
+    //     <div className={classes.toolbar}>
+    //     <Divider />
+    //     <p>something</p>
+    //     </div>
+    //   </div>
+    // );
+
+    // const drawer = <MainMenu />
 
     return (
       <div className={classes.root}>
@@ -89,6 +93,35 @@ class Navigation extends Component {
           </Toolbar>
           
         </AppBar>
+        <Hidden mdUp>
+          <Drawer
+            variant="temporary"
+            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+            open={this.state.isMobileOpen}
+            onClose={this.toggleDrawer}
+            classes={{
+              paper: classes.drawerPaper
+            }}
+            ModalProps={{
+              keepMounted: true
+            }}>
+            { <MainMenu 
+                value={this.props.value}
+                onChange={this.props.onChange} /> }
+          </Drawer>
+        </Hidden>
+        <Hidden smDown implementation='css'>
+          <Drawer
+            variant='permanent'
+            open
+            classes={{
+              paper: classes.drawerPaper
+            }}>
+            {<MainMenu
+              value={this.props.value}
+              onChange={this.props.onChange} />}
+          </Drawer>
+        </Hidden>
       </div>
     )
   }

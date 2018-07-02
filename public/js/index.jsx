@@ -37,20 +37,14 @@ class App extends Component {
         <div>
           <h2>Working with Apollo</h2>
           <Navigation />
-          <div>
-            <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/technique-select">Technique Select</Link></li>
-              <li><Link to="/add-technique">Add Technique</Link></li>
-            </ul>
-          </div>
 
-          <Route path="/technique-select" 
+          <Route path="/technique-select"
             render={() => <TechniqueSelect 
               value={this.state.selectedTechnique}
               onChange={this.selectTechnique} />}  />
 
-          <Route path="/add-technique" component={TechniqueInputForm} />
+          <Route path="/add-technique" 
+            component={TechniqueInputForm} />
 
         </div>
         </Router>

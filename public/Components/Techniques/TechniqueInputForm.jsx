@@ -42,6 +42,7 @@ export default class TechniqueInputForm extends Component {
     return str.charAt(0) + str.slice(1).toLowerCase();
   }
   render() {
+    console.log(this.props, 'props')
     const ranks = this.ranks.map((rank, index) => {
       let name = '';
       const re = /_/ig
